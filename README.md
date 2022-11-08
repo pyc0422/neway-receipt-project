@@ -1,0 +1,1 @@
+# neway-receipt-project
