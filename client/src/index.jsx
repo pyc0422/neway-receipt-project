@@ -9,6 +9,7 @@ import App from './components/App.jsx';
 import Stock from './components/Stock.jsx';
 import Receipt from './components/Receipt.jsx';
 import History from './components/History.jsx';
+import ShowReceipt from './components/ShowReceipt.jsx';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -25,8 +26,11 @@ const router = createBrowserRouter([
   {
     path:'history',
     element: <History />
+  },
+  {
+    path:'sell/receipt',
+    element: <ShowReceipt />
   }
-
 ])
 createRoot(document.getElementById('app')).render(
   <React.StrictMode>

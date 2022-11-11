@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Poppins:wght@300;400;500;600&display=swap');
+body {
+  font-family: 'Poppins', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  padding: 10px;
+}
+
+#header {
+  margin: 5%;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: xx-large;
+  font-weight: 600;
+}
+
+#content {
+  margin: 15% 10%;
+  text-align: center;
+}
+
+.btn {
+  border: solid black;
+  cursor: pointer;
+  font-size: larger;
+  margin: 0 5%;
+  padding: 3% 8%;
+  text-decoration: none;
+}
+.btn:hover {
+  background: lightgray;
+  color: white;
+}
+.sm-btn {
+  border: solid 1px black;
+  cursor: pointer;
+  margin-top:20px;
+  padding: 5px;
+}
+
+input {
+  margin-left: 5px;
+  margin-right: 10px;
+}
+
+/**** receipt *****/
+#receipt {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
