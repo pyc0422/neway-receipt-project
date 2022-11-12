@@ -1,12 +1,20 @@
-import React from 'react';
-import {v4 as uuidv4} from 'uuid'
+import React, { useRef } from 'react';
+import {v4 as uuidv4} from 'uuid';
+import ReactToPrint from 'react-to-print';
+import axios from 'axios';
 const ShowReceipt = ({receipt}) => {
-  const date =  new Date(Date.now());
-  console.log('date', date);
+
+  // console.log('date', date);
+  let componentRef = useRef();
+  //const [receipt, setRecipt] = useState(receipt);
+
+  const handleSubmit = (receipt) => {
+    console.log('this data sending to db: ', receipt);
+  }
   return (
     <>
 
-      <table>
+      <table ref={el => (componentRef=el)}>
         <thead>
           <tr><th className="m-font">Neway Supplies Inc.</th></tr>
           <tr>
@@ -16,8 +24,8 @@ const ShowReceipt = ({receipt}) => {
           </tr>
           <tr>
             <td>City, State ZIP code: </td><td>neway address</td>
-            <td>E: Fax Number: neway </td><td>phone number</td>
-            <td>Website: neway phone </td><td>{date.toLocaleString()}</td>
+            <td>E: Fax Number: </td><td>neway fax number</td>
+            <td>Website: </td><td>neway website </td>
           </tr>
         </thead>
         <tbody>
@@ -29,7 +37,10 @@ const ShowReceipt = ({receipt}) => {
           <tr>
             <td>Address:</td><td>{receipt.phone}</td>
             <td>Fax:</td><td>{receipt.fax}</td>
-            <td>Invoice Date</td><td>2022</td>
+            <td>Invoice Date</td><td>{receipt.date}</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td>Email:</td><td>{receipt.email}</td>
           </tr>
         </tbody>
         <tfoot>
@@ -52,18 +63,25 @@ const ShowReceipt = ({receipt}) => {
                 <td>${product.total}</td>
               </tr>
             )
-
           })}
-
             <tr><td>Invoice Subtotal</td><td>${receipt.total}</td></tr>
             <tr><td>Tax Rate</td><td>10%</td></tr>
-            <tr><td>Sale Tax</td><td>${receipt.total * 0.1}</td></tr>
+            <tr><td>Sale Tax</td><td>${(receipt.total * 0.1).toFixed(2)}</td></tr>
             <tr><td>Other</td><td>None</td></tr>
             <tr><td>Deposit Received:</td><td>{receipt.deposit}</td></tr>
             <tr><th>Total:</th><td>${(receipt.total * 1.1).toFixed(2)}</td></tr>
           </tfoot>
       </table>
-      </>
+      <div>
+
+        <ReactToPrint
+          trigger={() => <button>Print</button>}
+          content={() => componentRef}
+          onBeforePrint={() => {handleSubmit(receipt)}}
+        />
+
+      </div>
+    </>
   )
 }
 

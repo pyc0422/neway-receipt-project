@@ -6,8 +6,9 @@ const Receipt = (props) => {
   const [count, setCount] = useState(0);
   const [productLine, setProductLine] = useState(1);
   const [price, setPrice] = useState(0);
-  const [newReceipt, setReceipt] = useState({company: '', phone:'',address:'', products:[], total:0, deposit: 0})
+  const [newReceipt, setReceipt] = useState({company: '', phone:'',address:'', email:'', products:[], total:0, deposit: 0})
   const [showReceipt, setShowReceipt] = useState(false);
+
   const addMoreProduct = (e) => {
     e.preventDefault();
     if (!product.length || count === 0) {
@@ -23,7 +24,9 @@ const Receipt = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (product.length && count !== 0) {
-      setReceipt({...newReceipt, products: newReceipt.products.concat({product: product, count: count, price: price, total: count * price})});
+      setReceipt({...newReceipt,
+        products: newReceipt.products.concat({product: product, count: count, price: price, total: count * price}),
+        date: new Date(Date.now()).toLocaleString()});
     }
     setShowReceipt(true);
   }
@@ -50,6 +53,9 @@ const Receipt = (props) => {
           <br/>
           <label>Address:
             <input type="text" value={newReceipt.address} onChange={(e) => setReceipt({...newReceipt, address: e.target.value})}/>
+          </label>
+          <label>Email:
+            <input type="email" value={newReceipt.email} onChange={(e) => setReceipt({...newReceipt, email: e.target.value})}/>
           </label>
           <hr />
           {Array.from({length: productLine}, (e, i) =>  i).map((i) =>
