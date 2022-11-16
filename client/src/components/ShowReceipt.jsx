@@ -3,29 +3,31 @@ import {v4 as uuidv4} from 'uuid';
 import ReactToPrint from 'react-to-print';
 import axios from 'axios';
 const ShowReceipt = ({receipt}) => {
-
+  console.log('receipt: ', receipt, receipt.date, typeof receipt.date);
   // console.log('date', date);
   let componentRef = useRef();
   //const [receipt, setRecipt] = useState(receipt);
 
   const handleSubmit = (receipt) => {
     console.log('this data sending to db: ', receipt);
+    return axios.post('/addReceipt', {receipt})
+      .then(() => {
+        console.log('already sending to db');
+      })
   }
   return (
     <>
 
       <table ref={el => (componentRef=el)}>
         <thead>
-          <tr><th className="m-font">Neway Supplies Inc.</th></tr>
+          <tr><th className="m-font">Neway WholeSale Inc.</th></tr>
           <tr>
-            <td>Street Address: </td><td>neway address</td>
-            <td>P: Phone Number: </td><td>neway phone number</td>
-            <td>Email: </td><td>neway phone number</td>
+            <td>Street Address: </td><td>1111 W 48th St</td>
+            <td>P: Phone Number: </td><td>3128639884</td>
+            <td>Email: </td><td>sammei1125@yahoo.com</td>
           </tr>
           <tr>
-            <td>City, State ZIP code: </td><td>neway address</td>
-            <td>E: Fax Number: </td><td>neway fax number</td>
-            <td>Website: </td><td>neway website </td>
+            <td>City, State ZIP code: </td><td>Chicago, IL, 60609</td>
           </tr>
         </thead>
         <tbody>
@@ -49,7 +51,6 @@ const ShowReceipt = ({receipt}) => {
               <td>Product</td>
               <td>Qty</td>
               <td>Unit Price</td>
-              <td>Discount</td>
               <td>Price</td>
             </tr>
           {receipt.products.map((product, i) => {
@@ -59,17 +60,13 @@ const ShowReceipt = ({receipt}) => {
                 <td>{product.product}</td>
                 <td>{product.count}</td>
                 <td>${product.price}</td>
-                <td>Discount</td>
                 <td>${product.total}</td>
               </tr>
             )
           })}
             <tr><td>Invoice Subtotal</td><td>${receipt.total}</td></tr>
-            <tr><td>Tax Rate</td><td>10%</td></tr>
-            <tr><td>Sale Tax</td><td>${(receipt.total * 0.1).toFixed(2)}</td></tr>
-            <tr><td>Other</td><td>None</td></tr>
             <tr><td>Deposit Received:</td><td>{receipt.deposit}</td></tr>
-            <tr><th>Total:</th><td>${(receipt.total * 1.1).toFixed(2)}</td></tr>
+            <tr><th>Total:</th><td>${receipt.total}</td></tr>
           </tfoot>
       </table>
       <div>
