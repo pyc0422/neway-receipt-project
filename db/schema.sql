@@ -29,3 +29,5 @@ CREATE TABLE IF NOT EXISTS selldetails(
   price numeric not null,
   total numeric not null
 );
+
+-- psql -U yuchen -d neway -a -f db/schema.sql

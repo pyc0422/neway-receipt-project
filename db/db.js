@@ -19,15 +19,6 @@ module.exports = {
     })
   },
 
-  updateProducts: (name, count, db) => {
-    pool.query('UPDATE products SET stocks=$1 WHERE name=$2', [count, name], (err, res) => {
-      if (err) {
-        throw err;
-      }
-      cb(res.rows[0]);
-    })
-  },
-
   addProduct: (product, count, cb) => {
     product = product.toLowerCase();
     pool.query('SELECT * FROM products WHERE name=$1', [product], (err, res) => {
@@ -75,7 +66,7 @@ module.exports = {
       return newArr;
     }
     return pool
-      .query(`INSERT INTO history (invoice, company, phone, address, email, create_at, total)
+      .query(`INSERT INTO history (invoice, company, phone, address, email, createAt, total)
     VALUES('${invoice}', '${company}', '${phone}', '${address}', '${email}', '${date}', '${total}') RETURNING id`)
       .then((res) => {
         console.log("result: ", res.rows[0].id);
@@ -93,7 +84,6 @@ module.exports = {
         console.log('added!@');
       })
       .catch(err => console.log(err));
-
   }
 
 }

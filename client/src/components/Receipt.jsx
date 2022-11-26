@@ -2,6 +2,7 @@ import React, { useState, useEffect }from 'react';
 import { Link } from 'react-router-dom';
 import ShowReceipt from './ShowReceipt.jsx';
 import axios from 'axios';
+
 const Receipt = (props) => {
   const [product, setProduct] = useState('');
   const [count, setCount] = useState(0);
@@ -67,7 +68,7 @@ const Receipt = (props) => {
 
   return (
     <div id="receipt">
-      {showReceipt ? <ShowReceipt receipt={newReceipt} /> :
+      {showReceipt ? <ShowReceipt receipt={newReceipt} show={showReceipt} setShow={setShowReceipt}/> :
       <>
         <div className="title">Add a new receipt</div>
         <span>Please fill in below field</span>
@@ -121,7 +122,9 @@ const Receipt = (props) => {
           </label>
           <hr/>
           <input className="sm-btn" type="submit" value="Submit" />
+          <Link className="sm-btn" to={`/`}>Back</Link>
         </form>
+
       </>
 
       }
