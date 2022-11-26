@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const {expand} = require('./helper.js');
 const pool = new Pool({
   user: 'yuchen',
   host: 'localhost',
@@ -9,62 +10,53 @@ const pool = new Pool({
 
 //cconst db = Promise.promisifyAll(pool, {multiArgs:true});
 module.exports = {
-  getProducts: (cb) => {
-    pool.query('SELECT * FROM products ORDER BY id ASC', (err, res) => {
-      if (err) {
-        throw err;
-      }
-      console.log('all products: ', res.rows);
-      cb(res.rows);
-    })
+  getProducts: () => {
+    return pool
+      .query('SELECT * FROM products ORDER BY id ASC')
+      .then((results) => {
+        return results.rows;
+      })
+      .catch(err => console.log('getproducts: ', err));
   },
 
-  addProduct: (product, count, cb) => {
+  addProduct: (product, count) => {
     product = product.toLowerCase();
-    pool.query('SELECT * FROM products WHERE name=$1', [product], (err, res) => {
-      if (err) {
-        throw err;
-      }
-      if (!res.rows.length) {
-        pool.query('INSERT INTO products (name, stocks) VALUES ($1, $2)', [product, count], (err, res) => {
-          if (err) {
-            throw err;
-          }
-          console.log('INSERT!', res.rows[0]);
-          cb(res.rows[0]);
-        } )
-      } else {
-        console.log(typeof res.rows[0].stocks, typeof count);
-        let newCount = res.rows[0].stocks + parseInt(count);
-        //updateProducts(newCount, product, cb);
-        pool.query('UPDATE products SET stocks=$1 WHERE name=$2', [newCount, product], (err, res) => {
-          if (err) {
-            throw err;
-          }
-          cb(res.rows[0]);
-        })
-      }
-    })
+    return pool
+      .query('SELECT * FROM products WHERE name=$1', [product])
+      .then((result) => {
+        if(!result.rows.length) {
+          return pool.query('INSERT INTO products (name, stocks) VALUES ($1, $2)', [product, count])
+        } else {
+          let newCount = result.rows[0].stocks + parseInt(count);
+          return pool.query('UPDATE products SET stocks=$1 WHERE name=$2', [newCount, product])
+        }
+      })
+      .then((results) => {
+        return results.rows[0]
+      })
+      .catch(err => console.log(err));
+  },
+
+  getHistory: () => {
+    return pool
+      .query(`SELECT array_agg(json_build_object(
+        'id', history.id,
+        'invoice_id', history.invoice,
+        'company', history.company,
+        'phone', history.phone,
+        'address', history.address,
+        'email', history.email,
+        'createAt', history.createat,
+        'total', history.total
+      ) )FROM history`)
+      .then((results) => {
+        console.log('resu', results.rows[0].array_agg)
+        return results.rows[0].array_agg;
+      })
   },
 
   addHistory: ({company, phone, address, email, products, total, date, deposite, invoice}) =>{
     console.log('addhistroy!');
-    const expand = (rowCount, columnCount, startAt=1) => {
-      var index = startAt;
-      return Array(rowCount)
-        .fill(0)
-        .map(
-          (v)=>
-            `(${Array(columnCount).fill(0).map(
-              (q) => `$${index++}`).join(',')})`
-        )
-        .join(',');
-    }
-    const flatten = (arr) => {
-      let newArr = [];
-      arr.forEach((v) => v.forEach((p) => newArr.push(p)));
-      return newArr;
-    }
     return pool
       .query(`INSERT INTO history (invoice, company, phone, address, email, createAt, total)
     VALUES('${invoice}', '${company}', '${phone}', '${address}', '${email}', '${date}', '${total}') RETURNING id`)
@@ -77,7 +69,7 @@ module.exports = {
         });
         let text = `INSERT INTO selldetails (history_id, name, count, price, total)
         VALUES ${expand(products.length, 5)}`
-        console.log('q: ', text, productParams, flatten(productParams), productParams.flat());
+        console.log('q: ', text, productParams, productParams.flat());
         return pool.query(text, productParams.flat());
       })
       .then(() => {
@@ -85,5 +77,4 @@ module.exports = {
       })
       .catch(err => console.log(err));
   }
-
 }

@@ -1,20 +1,28 @@
 import React, { useRef, useState, useEffect } from 'react';
-import Receipt from './Receipt.jsx';
 import {v4 as uuidv4} from 'uuid';
-import Table from 'react-bootstrap/Table';
 import ReactToPrint from 'react-to-print';
 import axios from 'axios';
+
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+
 const ShowReceipt = ({receipt, show, setShow}) => {
   console.log('receipt: ', receipt, receipt.date, typeof receipt.date);
   // console.log('date', date);
   let componentRef = useRef();
 
-  //const [receipt, setRecipt] = useState(receipt);
+  //const [receipt, seTableRowecipt] = useState(receipt);
 
   const handleSubmit = (receipt) => {
     receipt.invoice = id;
-    console.log('this data sending to db: ', receipt);
-    return axios.post('/addReceipt', {receipt})
+    console.log('TableCellis data sending to db: ', receipt);
+    return axios.post('/history', {receipt})
       .then(() => {
         console.log('already sending to db');
       })
@@ -26,74 +34,81 @@ const ShowReceipt = ({receipt, show, setShow}) => {
     setId(id);
   }, [id.length])
 
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    '&:last-child td, &:last-child th': {
+      border: 0,
+    },
+  }));
 
   return (
 
     <>
       <div ref={el => (componentRef=el)}>
-        <table>
-          <thead>
-            <tr><th className="m-font">Neway WholeSale Inc.</th></tr>
-            <tr>
-              <td>Street Address: </td><td>1111 W 48th St</td>
-              <td>City, State ZIP code: </td><td>Chicago, IL, 60609</td>
+        <TableContainer component={Paper}>
+          <Table sx={{minWidTableCell:700, marginTop: "5%"}} aria-label="custom table">
+            <TableHead>
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{fontSize: "35px", fontWeight: 600, color: "black"}}>Neway WholeSale Inc.</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Address: </TableCell><TableCell colSpan={4}>1111 W 48St, Chicago, IL, 60609</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Phone Number: </TableCell><TableCell>3128639884</TableCell>
+                <TableCell>Email: </TableCell><TableCell>sammei1125@yahoo.com</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <StyledTableRow>
+                <TableCell>Bill to:</TableCell><TableCell>{receipt.company}</TableCell>
+                <TableCell>Phone:</TableCell><TableCell>{receipt.phone}</TableCell>
+                <TableCell>Invoice#</TableCell><TableCell>{id}</TableCell>
+              </StyledTableRow>
+              <StyledTableRow>
+                <TableCell>Address:</TableCell><TableCell colSpan={3}>{receipt.address}</TableCell>
+                <TableCell>Invoice Date</TableCell><TableCell>{receipt.date}</TableCell>
+              </StyledTableRow>
+              <StyledTableRow>
+                <TableCell>Fax:</TableCell><TableCell>{receipt.fax}</TableCell>
+                <TableCell>Email:</TableCell><TableCell>{receipt.email}</TableCell>
+              </StyledTableRow>
+            </TableBody>
+          </Table>
+          <Table aria-label="custom table">
+            <TableHead>
+              <TableRow sx={{backgroundColor: "gray"}}>
+                <TableCell sx={{fontSize: "15px", fontWeight: 600, color: "white"}}>Item#</TableCell>
+                <TableCell sx={{fontSize: "15px", fontWeight: 600, color: "white"}}>Product</TableCell>
+                <TableCell sx={{fontSize: "15px", fontWeight: 600, color: "white"}}>Qty</TableCell>
+                <TableCell sx={{fontSize: "15px", fontWeight: 600, color: "white"}}>Unit Price</TableCell>
+                <TableCell sx={{fontSize: "15px", fontWeight: 600, color: "white"}}>Price</TableCell>
+              </TableRow>
+            </TableHead>
 
-            </tr>
-            <tr>
-              <td>P: Phone Number: </td><td>3128639884</td>
-              <td>Email: </td><td>sammei1125@yahoo.com</td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Bill to:</td><td>{receipt.company}</td>
-              <td>Phone:</td><td>{receipt.phone}</td>
-              <td>Invoice#</td><td>{id}</td>
-            </tr>
-            <tr>
-              <td>Address:</td><td>{receipt.phone}</td>
-              <td>Fax:</td><td>{receipt.fax}</td>
-              <td>Invoice Date</td><td>{receipt.date}</td>
-            </tr>
-            <tr>
-              <td colSpan={3}>Email:</td><td>{receipt.email}</td>
-            </tr>
-          </tbody>
-        </table>
-        <table>
-          <thead>
-            <tr>
-              <th>Item#</th>
-              <th>Product</th>
-              <th>Qty</th>
-              <th>Unit Price</th>
-              <th>Price</th>
-            </tr>
-          </thead>
-
-        <tbody>
-          {receipt.products.map((product, i) =>  (
-                <tr key = {i}>
-                  <td>{i+1}</td>
-                  <td>{product.product}</td>
-                  <td>{product.count}</td>
-                  <td>${product.price}</td>
-                  <td>${product.total}</td>
-                </tr>
-              )
-          )}
-          <tr><td>Invoice Subtotal</td><td>${receipt.total}</td></tr>
-          <tr><td>Deposit Received:</td><td>{receipt.deposit}</td></tr>
-          <tr><th>Total:</th><td>${receipt.total}</td></tr>
-        </tbody>
-      </table>
+            <TableBody>
+              {receipt.products.map((product, i) =>  (
+                    <StyledTableRow key = {i}>
+                      <TableCell>{i+1}</TableCell>
+                      <TableCell>{product.product}</TableCell>
+                      <TableCell>{product.count}</TableCell>
+                      <TableCell>${product.price}</TableCell>
+                      <TableCell>${product.total}</TableCell>
+                    </StyledTableRow>
+                  )
+              )}
+              <StyledTableRow><TableCell colSpan={4} align="right">Invoice Subtotal</TableCell><TableCell>${receipt.total}</TableCell></StyledTableRow>
+              <StyledTableRow><TableCell colSpan={4} align="right">Deposit Received:</TableCell><TableCell>{receipt.deposit}</TableCell></StyledTableRow>
+              <StyledTableRow><TableCell colSpan={4} align="right">Total:</TableCell><TableCell>${receipt.total}</TableCell></StyledTableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
       <div>
-        <ReactToPrint
-          trigger={() => <button>Print</button>}
-          content={() => componentRef}
-          onBeforePrint={() => {handleSubmit(receipt)}}
-        />
+        <ReactToPrint trigger={() => <button>Print</button>} content={() => componentRef} onBeforePrint={() => {handleSubmit(receipt)}}/>
         <button className="sm-btn" onClick={() => setShow(!show)}>Back</button>
       </div>
     </>
