@@ -1,4 +1,4 @@
-const Pool = require('pg').Pool;
+const { Pool } = require('pg');
 const pool = new Pool({
   user: 'yuchen',
   host: 'localhost',
@@ -56,8 +56,44 @@ module.exports = {
     })
   },
 
-  // addHistory: (receipt, cb)=>{
-  //   pool.query('INSERT INTO receipts (invoice_id, company, phone, fax, email, address, date, deposit, total) VALUES')
-  // }
+  addHistory: ({company, phone, address, email, products, total, date, deposite, invoice}) =>{
+    console.log('addhistroy!');
+    const expand = (rowCount, columnCount, startAt=1) => {
+      var index = startAt;
+      return Array(rowCount)
+        .fill(0)
+        .map(
+          (v)=>
+            `(${Array(columnCount).fill(0).map(
+              (q) => `$${index++}`).join(',')})`
+        )
+        .join(',');
+    }
+    const flatten = (arr) => {
+      let newArr = [];
+      arr.forEach((v) => v.forEach((p) => newArr.push(p)));
+      return newArr;
+    }
+    return pool
+      .query(`INSERT INTO history (invoice, company, phone, address, email, create_at, total)
+    VALUES('${invoice}', '${company}', '${phone}', '${address}', '${email}', '${date}', '${total}') RETURNING id`)
+      .then((res) => {
+        console.log("result: ", res.rows[0].id);
+        let id = res.rows[0].id;
+        const productParams = [];
+        products.forEach((item) => {
+          productParams.push([id, item.product, parseInt(item.count), Number(item.price), Number(item.total)])
+        });
+        let text = `INSERT INTO selldetails (history_id, name, count, price, total)
+        VALUES ${expand(products.length, 5)}`
+        console.log('q: ', text, productParams, flatten(productParams), productParams.flat());
+        return pool.query(text, productParams.flat());
+      })
+      .then(() => {
+        console.log('added!@');
+      })
+      .catch(err => console.log(err));
+
+  }
 
 }

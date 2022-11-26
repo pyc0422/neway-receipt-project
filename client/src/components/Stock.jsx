@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from 'react';
+import { Outlet, Link } from 'react-router-dom';
 import axios from 'axios';
 const Stock = (props) => {
   const [product, setProduct] = useState({name:'', count:0});
   const [products, setProducts] = useState([]);
-  const handleSubmit = ({name, count}) => {
-    axios.post('/addProduct', {name, count})
+  const getAllProducts = () => {
+    axios.get('/products')
+    .then((result) => {
+      setProducts(result.data);
+    })
+  }
 
+  const handleSubmit = ({name, count}) => {
+    name = name.toLowerCase();
+    return axios.post('/addProduct', {name, count})
+      .then(() => {
+        getAllProducts();
+        setProduct({name:'', count:0})
+      })
   }
 
   useEffect(() => {
-    axios.get('/products')
-      .then((result) => {
-        setProducts(result.data);
-      })
+    getAllProducts()
   }, [products.length])
 
   return (
     <>
+      <h2>Stocks</h2>
+      <hr/>
       <div>
         <input type="text" value={product.name} onChange={(e) => {setProduct({...product, name: e.target.value})}}/>
         <input type="number" value={product.count} onChange={(e) => {setProduct({...product, count: e.target.value})}} />
@@ -40,6 +51,7 @@ const Stock = (props) => {
           </table>
         </div>
       }
+      <Link className="sm-btn" to={`/`}>Back</Link>
 
     </>
 

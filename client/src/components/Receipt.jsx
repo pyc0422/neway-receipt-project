@@ -22,30 +22,41 @@ const Receipt = (props) => {
         setProducts(data.data);
       })
   }, [products.length])
+
   const addMoreProduct = (e) => {
     e.preventDefault();
     setProductLine(productLine + 1);
   }
+
   const addOne = (e) => {
     e.preventDefault();
     if (!product.length || count === 0) {
       alert('Please fill in the blank first!');
       return;
     }
+    newReceipt.products.map(item => {
+      if (item.product === product) {
+        alert('You alread add this product! Please Delete!');
+        return;
+      }
+    })
     setReceipt({...newReceipt, products: newReceipt.products.concat([{product: product, count: count, price: price, total: count * price}])});
     setProduct('');
     setCount(0);
     setPrice(0);
   }
+
+  const deleteOne = (e, i) => {
+    e.preventDefault();
+    newReceipt.products.splice(i, 1);
+    console.log('new', newReceipt.products);
+    setProductLine(productLine - 1);
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
-
     let newDate = new Date(Date.now()).toLocaleString()
     console.log("newDat: ", newDate);
-    setReceipt({...newReceipt,
-      products: newReceipt.products.concat({product: product, count: count, price: price, total: count * price}),
-      date: newDate});
-
+    setReceipt({...newReceipt, date: newDate});
     setShowReceipt(true);
   }
 
@@ -82,18 +93,19 @@ const Receipt = (props) => {
             <select id="product" name="product" value={!newReceipt.products[i] ? product : newReceipt.products[i].product} onChange={(e) => setProduct(e.target.value)}>
               <option value="select below">Select below</option>
               {products.map((item,j) =>  (
-                <option key={j} id={j} value={item.name}>{item.name}</option>
+                <option key={j} id={j} value={item.name}>{item.name}({item.stocks})</option>
               ))}
             </select>
               {/* <input type="text" value={!newReceipt.products[i] ? product : newReceipt.products[i].product} onChange={(e) => setProduct(e.target.value)}/>
             </label> */}
             <label>Count:
-              <input type="number" value={!newReceipt.products[i] ? count : newReceipt.products[i].count} onChange={(e) => setCount(e.target.value)}/>
+              <input type="number" value={!newReceipt.products[i] ? count : newReceipt.products[i].count} min={0}onChange={(e) => setCount(e.target.value)}/>
             </label>
             <label>Unit Price:
               <input type="text" value={!newReceipt.products[i] ? price : newReceipt.products[i].price} onChange={(e) => setPrice(e.target.value)}/>
             </label>
             <button onClick={(e) => addOne(e)}>ADD</button>
+            <button onClick={(e, i) => deleteOne(e, i)}>Delete</button>
             <label>Price: ${!newReceipt.products[i] ? 0 : newReceipt.products[i].total}</label>
             <br/>
           </div>)

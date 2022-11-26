@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {v4 as uuidv4} from 'uuid';
 import ReactToPrint from 'react-to-print';
 import axios from 'axios';
@@ -9,12 +9,18 @@ const ShowReceipt = ({receipt}) => {
   //const [receipt, setRecipt] = useState(receipt);
 
   const handleSubmit = (receipt) => {
+    receipt.invoice = id;
     console.log('this data sending to db: ', receipt);
     return axios.post('/addReceipt', {receipt})
       .then(() => {
         console.log('already sending to db');
       })
   }
+  const [id, setId] = useState('')
+  useEffect(()=> {
+    let id = uuidv4();
+    setId(id);
+  }, [id.length])
   return (
     <>
 
@@ -34,7 +40,7 @@ const ShowReceipt = ({receipt}) => {
           <tr>
             <td>Bill to:</td><td>{receipt.company}</td>
             <td>Phone:</td><td>{receipt.phone}</td>
-            <td>Invoice#</td><td>{uuidv4()}</td>
+            <td>Invoice#</td><td>{id}</td>
           </tr>
           <tr>
             <td>Address:</td><td>{receipt.phone}</td>
@@ -53,17 +59,17 @@ const ShowReceipt = ({receipt}) => {
               <td>Unit Price</td>
               <td>Price</td>
             </tr>
-          {receipt.products.map((product, i) => {
-            return (
-              <tr key = {i}>
-                <td>{i+1}</td>
-                <td>{product.product}</td>
-                <td>{product.count}</td>
-                <td>${product.price}</td>
-                <td>${product.total}</td>
-              </tr>
-            )
-          })}
+          {receipt.products.map((product, i) =>  (
+                <tr key = {i}>
+                  <td>{i+1}</td>
+                  <td>{product.product}</td>
+                  <td>{product.count}</td>
+                  <td>${product.price}</td>
+                  <td>${product.total}</td>
+                </tr>
+              )
+
+          )}
             <tr><td>Invoice Subtotal</td><td>${receipt.total}</td></tr>
             <tr><td>Deposit Received:</td><td>{receipt.deposit}</td></tr>
             <tr><th>Total:</th><td>${receipt.total}</td></tr>
