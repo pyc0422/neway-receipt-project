@@ -1,5 +1,4 @@
 import React, { useState, useEffect }from 'react';
-import { Link } from 'react-router-dom';
 import ShowReceipt from './ShowReceipt.jsx';
 import axios from 'axios';
 
@@ -122,9 +121,7 @@ const Receipt = (props) => {
           </label>
           <hr/>
           <input className="sm-btn" type="submit" value="Submit" />
-          <Link className="sm-btn" to={`/`}>Back</Link>
         </form>
-
       </>
 
       }

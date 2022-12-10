@@ -8,9 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
-
-
+import Header from './header.jsx';
 const History = (props) => {
   const [keyWord, setKeyWord] = useState('');
   const [receipts, setReceipts] = useState([]);
@@ -45,8 +43,7 @@ const History = (props) => {
   }));
   return (
     <div>
-      <h2>History Page</h2>
-      <hr/>
+      <div style={{margin: "2%", fonSize: "small"}}>Recently History</div>
       <div>
         <input type="text" value={keyWord} onChange={(e) => setKeyWord(e.target.value)}/>
         <button onClick={hanldeSearch}>Search</button>

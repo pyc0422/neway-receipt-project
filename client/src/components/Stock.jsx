@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link } from 'react-router-dom';
 import axios from 'axios';
 const Stock = (props) => {
   const [product, setProduct] = useState({name:'', count:0});
@@ -26,8 +25,6 @@ const Stock = (props) => {
 
   return (
     <>
-      <h2>Stocks</h2>
-      <hr/>
       <div>
         <input type="text" value={product.name} onChange={(e) => {setProduct({...product, name: e.target.value})}}/>
         <input type="number" value={product.count} onChange={(e) => {setProduct({...product, count: e.target.value})}} />
@@ -51,8 +48,6 @@ const Stock = (props) => {
           </table>
         </div>
       }
-      <Link className="sm-btn" to={`/`}>Back</Link>
-
     </>
 
   )

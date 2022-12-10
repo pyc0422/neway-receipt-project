@@ -38,20 +38,20 @@ module.exports = {
   },
 
   getHistory: () => {
+    let query2 = `SELECT
+    id AS id,
+    invoice AS invoice_id,
+    company,
+    phone,
+    email,
+    createat AS createAt,
+    total
+    FROM history`
     return pool
-      .query(`SELECT array_agg(json_build_object(
-        'id', history.id,
-        'invoice_id', history.invoice,
-        'company', history.company,
-        'phone', history.phone,
-        'address', history.address,
-        'email', history.email,
-        'createAt', history.createat,
-        'total', history.total
-      ) )FROM history`)
+      .query(query2)
       .then((results) => {
-        console.log('resu', results.rows[0].array_agg)
-        return results.rows[0].array_agg;
+        console.log('resu', results.rows)
+        return results.rows;
       })
   },
 
